@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Plataforma Gamer de Vicente</title>
+  <title>🎮 Plataforma Gamer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { box-sizing: border-box; }
@@ -69,12 +69,20 @@
     button:hover {
       background-color: #d50000;
     }
-    #uploadButton {
+    #uploadButton, #logoutButton {
       position: fixed;
-      top: 20px;
       right: 20px;
       z-index: 1000;
       display: none;
+    }
+    #uploadButton { top: 20px; }
+    #logoutButton {
+      top: 70px;
+      background-color: #333;
+      box-shadow: 0 0 10px #00b0ff;
+    }
+    #logoutButton:hover {
+      background-color: #555;
     }
     #uploadInput {
       display: none;
@@ -169,13 +177,14 @@
 </head>
 <body>
 
-  <h1>🎮 Plataforma Gamer de Vicente</h1>
+  <h1>🎮 Plataforma Gamer</h1>
 
   <div class="search-bar" id="searchBar" style="display:none;">
     <input type="text" placeholder="Buscar partidas, usuarios, clips...">
   </div>
 
   <button id="uploadButton">📤 Subir vídeo</button>
+  <button id="logoutButton">🔒 Cerrar sesión</button>
   <input type="file" id="uploadInput" accept="video/mp4">
 
   <div class="centered">
@@ -219,6 +228,7 @@
   </footer>
 
   <script>
+    const logoutButton = document.getElementById('logoutButton');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const videoElement = document.getElementById('liveVideo');
@@ -233,7 +243,7 @@
 
     let videoURL = null;
     let currentUser = localStorage.getItem('currentUser') || '';
-    const users = JSON.parse(localStorage.getItem('users')) || {};
+    let users = JSON.parse(localStorage.getItem('users')) || {};
 
     function showRegister() {
       loginForm.style.display = 'none';
@@ -274,7 +284,9 @@
         loginForm.style.display = 'none';
         uploadButton.style.display = 'inline-block';
         searchBar.style.display = 'block';
+        logoutButton.style.display = 'inline-block';
 
+        document.querySelectorAll('.centered p').forEach(p => p.remove());
         const welcome = document.createElement('p');
         welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
         welcome.style.marginBottom = '20px';
@@ -289,7 +301,9 @@
       loginForm.style.display = 'none';
       uploadButton.style.display = 'inline-block';
       searchBar.style.display = 'block';
+      logoutButton.style.display = 'inline-block';
 
+      document.querySelectorAll('.centered p').forEach(p => p.remove());
       const welcome = document.createElement('p');
       welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
       welcome.style.marginBottom = '20px';
@@ -348,5 +362,20 @@
       comment.innerHTML = `<span class="username">${currentUser}:</span> <span class="message">${text}</span>`;
       commentList.appendChild(comment);
       commentInput.value = '';
+    });
+
+    logoutButton.addEventListener('click', () => {
+      localStorage.removeItem('currentUser');
+      currentUser = '';
+
+      container.style.display = 'none';
+      uploadButton.style.display = 'none';
+      searchBar.style.display = 'none';
+      logoutButton.style.display = 'none';
+      loginForm.style.display = 'block';
+
+      chat.innerHTML = '';
+      commentList.innerHTML = '';
+      document.querySelectorAll('.centered p').forEach(p => p.remove());
     });
   </script>
