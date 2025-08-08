@@ -1,192 +1,352 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gaming Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>🎮 Plataforma Gamer de Vicente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; }
     body {
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'Orbitron', 'Segoe UI', sans-serif;
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 0;
     }
-
-    .container {
-      background-color: #121212;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #00ffcc44;
-      width: 350px;
-      position: relative;
+    h1 {
+      color: #ff1744;
+      font-size: 2em;
+      margin: 30px 0 10px;
+      text-align: center;
+      text-shadow: 0 0 10px #ff1744;
     }
-
-    h2 {
+    .search-bar {
       text-align: center;
       margin-bottom: 20px;
-      color: #00ffcc;
     }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 6px;
-      background-color: #1e1e1e;
-      color: #fff;
-      font-size: 14px;
-    }
-
-    input:focus {
-      outline: 2px solid #00ffcc;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      background-color: #00ffcc;
-      border: none;
-      border-radius: 6px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #00e6b8;
-    }
-
-    .toggle {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 13px;
-    }
-
-    .toggle a {
-      color: #00ffcc;
-      text-decoration: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    #userList {
-      margin-top: 15px;
-      background-color: #1e1e1e;
+    .search-bar input {
       padding: 10px;
+      width: 300px;
       border-radius: 6px;
-      font-size: 14px;
+      border: 2px solid #333;
+      background-color: #1c1c1c;
+      color: #fff;
     }
-
-    #userList li {
-      margin: 5px 0;
+    .centered {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-
-    #plusButton {
+    form {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    input[type="text"],
+    input[type="file"],
+    input[type="password"] {
+      padding: 12px;
+      background-color: #1c1c1c;
+      color: #fff;
+      border: 2px solid #333;
+      border-radius: 6px;
+      margin: 8px;
+      width: 250px;
+    }
+    button {
+      padding: 12px 24px;
+      background-color: #ff1744;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 10px #ff1744;
+      transition: background 0.3s;
+      margin: 8px;
+    }
+    button:hover {
+      background-color: #d50000;
+    }
+    #uploadButton {
       position: fixed;
       top: 20px;
-      left: 20px;
-      background-color: #00ffcc;
-      color: #000;
-      font-size: 24px;
-      font-weight: bold;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00ffcc88;
-      transition: background 0.3s;
+      right: 20px;
       z-index: 1000;
+      display: none;
     }
-
-    #plusButton:hover {
-      background-color: #00e6b8;
+    #uploadInput {
+      display: none;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      background-color: #000;
+      border: 2px solid #ff1744;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .live-indicator {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #ff1744;
+      color: white;
+      padding: 6px 12px;
+      font-weight: bold;
+      border-radius: 4px;
+      font-size: 0.9em;
+      animation: pulse 1s infinite;
+      box-shadow: 0 0 10px #ff1744;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    .chat-box {
+      width: 100%;
+      max-width: 960px;
+      background-color: #1c1c1c;
+      margin: 30px auto;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
+      border: 2px solid #333;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+    }
+    .username {
+      color: #00b0ff;
+      font-weight: bold;
+    }
+    .message {
+      color: #fff;
+    }
+    #comments h3 {
+      margin-top: 0;
+      color: #ff1744;
+    }
+    #commentForm {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    #commentInput {
+      flex: 1;
+      padding: 10px;
+      background-color: #1c1c1c;
+      border: 2px solid #333;
+      border-radius: 6px;
+      color: #fff;
+    }
+    #commentForm button {
+      padding: 10px 20px;
+      background-color: #00b0ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-  <button id="plusButton" class="hidden" onclick="showUsers()">+</button>
 
-  <div class="container" id="authContainer">
-    <div id="loginForm">
-      <h2>Iniciar Sesión</h2>
-      <input type="text" id="loginUser" placeholder="Usuario" />
-      <input type="password" id="loginPass" placeholder="Contraseña" />
-      <button onclick="login()">Entrar</button>
-      <div class="toggle">
-        ¿No tienes cuenta? <a onclick="toggleForms()">Regístrate</a>
+  <h1>🎮 Plataforma Gamer de Vicente</h1>
+
+  <div class="search-bar" id="searchBar" style="display:none;">
+    <input type="text" placeholder="Buscar partidas, usuarios, clips...">
+  </div>
+
+  <button id="uploadButton">📤 Subir vídeo</button>
+  <input type="file" id="uploadInput" accept="video/mp4">
+
+  <div class="centered">
+    <form id="loginForm">
+      <input type="text" id="loginUser" placeholder="Usuario" required>
+      <input type="password" id="loginPass" placeholder="Contraseña" required>
+      <br>
+      <button type="submit">Entrar</button>
+      <button type="button" onclick="showRegister()">Registrarse</button>
+    </form>
+
+    <form id="registerForm" style="display:none;">
+      <input type="text" id="regUser" placeholder="Nuevo usuario" required>
+      <input type="password" id="regPass" placeholder="Nueva contraseña" required>
+      <br>
+      <button type="submit">Crear cuenta</button>
+      <button type="button" onclick="hideRegister()">Cancelar</button>
+    </form>
+
+    <div id="directoContainer" style="display:none;">
+      <div class="video-wrapper">
+        <video id="liveVideo" autoplay muted playsinline></video>
+        <div class="live-indicator">🔴 EN VIVO</div>
       </div>
-    </div>
 
-    <div id="registerForm" class="hidden">
-      <h2>Registro</h2>
-      <input type="text" id="regUser" placeholder="Usuario" />
-      <input type="email" id="regEmail" placeholder="Correo electrónico" />
-      <input type="password" id="regPass" placeholder="Contraseña" />
-      <button onclick="register()">Crear cuenta</button>
-      <div class="toggle">
-        ¿Ya tienes cuenta? <a onclick="toggleForms()">Inicia sesión</a>
+      <div class="chat-box" id="chat"></div>
+
+      <div class="chat-box" id="comments">
+        <h3>💬 Comentarios</h3>
+        <div id="commentList"></div>
+        <form id="commentForm">
+          <input type="text" id="commentInput" placeholder="Escribe tu opinión..." required>
+          <button type="submit">Enviar</button>
+        </form>
       </div>
     </div>
   </div>
 
-  <div class="container hidden" id="dashboard">
-    <h2>¡Bienvenido, gamer! 🎮</h2>
-    <ul id="userList" class="hidden"></ul>
-  </div>
+  <footer>
+    Plataforma Gamer de Vicente © 2025
+  </footer>
 
   <script>
-    const users = [];
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const videoElement = document.getElementById('liveVideo');
+    const container = document.getElementById('directoContainer');
+    const chat = document.getElementById('chat');
+    const uploadButton = document.getElementById('uploadButton');
+    const uploadInput = document.getElementById('uploadInput');
+    const searchBar = document.getElementById('searchBar');
+    const commentForm = document.getElementById('commentForm');
+    const commentInput = document.getElementById('commentInput');
+    const commentList = document.getElementById('commentList');
 
-    function toggleForms() {
-      document.getElementById('loginForm').classList.toggle('hidden');
-      document.getElementById('registerForm').classList.toggle('hidden');
+    let videoURL = null;
+    let currentUser = localStorage.getItem('currentUser') || '';
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+
+    function showRegister() {
+      loginForm.style.display = 'none';
+      registerForm.style.display = 'block';
     }
 
-    function register() {
-      const username = document.getElementById('regUser').value;
-      if (username) {
-        users.push(username);
-        alert('¡Cuenta creada con éxito!');
-        toggleForms();
-      } else {
-        alert('Por favor, ingresa un nombre de usuario.');
+    function hideRegister() {
+      registerForm.style.display = 'none';
+      loginForm.style.display = 'block';
+    }
+
+    registerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const user = document.getElementById('regUser').value.trim();
+      const pass = document.getElementById('regPass').value;
+
+      if (!user || !pass) return;
+
+      if (users[user]) {
+        alert('Ese usuario ya existe');
+        return;
       }
-    }
 
-    function login() {
-      const username = document.getElementById('loginUser').value;
-      if (username) {
-        document.getElementById('authContainer').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        document.getElementById('plusButton').classList.remove('hidden'); // Mostrar el botón +
+      users[user] = pass;
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Cuenta creada con éxito');
+      hideRegister();
+    });
+
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+
+      if (users[user] && users[user] === pass) {
+        currentUser = user;
+        localStorage.setItem('currentUser', user);
+        loginForm.style.display = 'none';
+        uploadButton.style.display = 'inline-block';
+        searchBar.style.display = 'block';
+
+        const welcome = document.createElement('p');
+        welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
+        welcome.style.marginBottom = '20px';
+        welcome.style.textAlign = 'center';
+        document.querySelector('.centered').insertBefore(welcome, container);
       } else {
-        alert('Ingresa tu usuario para continuar.');
+        alert('Usuario o contraseña incorrectos');
       }
+    });
+
+    if (currentUser) {
+      loginForm.style.display = 'none';
+      uploadButton.style.display = 'inline-block';
+      searchBar.style.display = 'block';
+
+      const welcome = document.createElement('p');
+      welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
+      welcome.style.marginBottom = '20px';
+      welcome.style.textAlign = 'center';
+      document.querySelector('.centered').insertBefore(welcome, container);
     }
 
-    function showUsers() {
-      const list = document.getElementById('userList');
-      list.innerHTML = '';
-      users.forEach(user => {
-        const li = document.createElement('li');
-        li.textContent = user;
-        list.appendChild(li);
-      });
-      list.classList.toggle('hidden');
-    }
+    uploadButton.addEventListener('click', () => {
+      uploadInput.click();
+    });
+
+    uploadInput.addEventListener('change', () => {
+      const file = uploadInput.files[0];
+      if (!file) return;
+
+      videoURL = URL.createObjectURL(file);
+      videoElement.src = videoURL;
+
+      container.style.display = 'block';
+      videoElement.controls = false;
+      videoElement.play();
+      videoElement.addEventListener('pause', () => videoElement.play());
+
+      const metadata = {
+        id: 'directo_' + Date.now(),
+        title: file.name,
+        isLive: true,
+        startTime: new Date().toISOString(),
+        videoUrl: videoURL,
+        user: currentUser
+      };
+
+      console.log('📡 Publicado como DIRECTO:', metadata);
+
+      const saludo = document.createElement('div');
+      saludo.className = 'chat-message';
+      saludo.innerHTML = `<span class="username">${currentUser}:</span> <span class="message">¡Bienvenidos a mi directo gamer!</span>`;
+      chat.appendChild(saludo);
+    });
+
+    videoElement.addEventListener('ended', () => {
+      container.style.display = 'none';
+      if (videoURL) {
+        URL.revokeObjectURL(videoURL);
+        console.log('🗑️ Vídeo borrado del sistema');
+      }
+    });
+
+    commentForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const text = commentInput.value.trim();
+      if (!text || !currentUser) return;
+
+      const comment = document.createElement('div');
+      comment.className = 'chat-message';
+      comment.innerHTML = `<span class="username">${currentUser}:</span> <span class="message">${text}</span>`;
+      commentList.appendChild(comment);
+      commentInput.value = '';
+    });
   </script>
-</body>
-</html>
