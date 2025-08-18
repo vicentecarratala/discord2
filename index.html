@@ -1,381 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>🎮 Plataforma Gamer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      background-color: #0a0a0a;
-      color: #e0e0e0;
-      font-family: 'Orbitron', 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      color: #ff1744;
-      font-size: 2em;
-      margin: 30px 0 10px;
-      text-align: center;
-      text-shadow: 0 0 10px #ff1744;
-    }
-    .search-bar {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .search-bar input {
-      padding: 10px;
-      width: 300px;
-      border-radius: 6px;
-      border: 2px solid #333;
-      background-color: #1c1c1c;
-      color: #fff;
-    }
-    .centered {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    form {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    input[type="text"],
-    input[type="file"],
-    input[type="password"] {
-      padding: 12px;
-      background-color: #1c1c1c;
-      color: #fff;
-      border: 2px solid #333;
-      border-radius: 6px;
-      margin: 8px;
-      width: 250px;
-    }
-    button {
-      padding: 12px 24px;
-      background-color: #ff1744;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 0 10px #ff1744;
-      transition: background 0.3s;
-      margin: 8px;
-    }
-    button:hover {
-      background-color: #d50000;
-    }
-    #uploadButton, #logoutButton {
-      position: fixed;
-      right: 20px;
-      z-index: 1000;
-      display: none;
-    }
-    #uploadButton { top: 20px; }
-    #logoutButton {
-      top: 70px;
-      background-color: #333;
-      box-shadow: 0 0 10px #00b0ff;
-    }
-    #logoutButton:hover {
-      background-color: #555;
-    }
-    #uploadInput {
-      display: none;
-    }
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 960px;
-      background-color: #000;
-      border: 2px solid #ff1744;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 20px;
-    }
-    video {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .live-indicator {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: #ff1744;
-      color: white;
-      padding: 6px 12px;
-      font-weight: bold;
-      border-radius: 4px;
-      font-size: 0.9em;
-      animation: pulse 1s infinite;
-      box-shadow: 0 0 10px #ff1744;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-    .chat-box {
-      width: 100%;
-      max-width: 960px;
-      background-color: #1c1c1c;
-      margin: 30px auto;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: left;
-      border: 2px solid #333;
-    }
-    .chat-message {
-      margin-bottom: 10px;
-    }
-    .username {
-      color: #00b0ff;
-      font-weight: bold;
-    }
-    .message {
-      color: #fff;
-    }
-    #comments h3 {
-      margin-top: 0;
-      color: #ff1744;
-    }
-    #commentForm {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-    }
-    #commentInput {
-      flex: 1;
-      padding: 10px;
-      background-color: #1c1c1c;
-      border: 2px solid #333;
-      border-radius: 6px;
-      color: #fff;
-    }
-    #commentForm button {
-      padding: 10px 20px;
-      background-color: #00b0ff;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 0.9em;
-      color: #666;
-      padding: 20px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Gamer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <h1>🎮 Plataforma Gamer</h1>
-
-  <div class="search-bar" id="searchBar" style="display:none;">
-    <input type="text" placeholder="Buscar partidas, usuarios, clips...">
-  </div>
-
-  <button id="uploadButton">📤 Subir vídeo</button>
-  <button id="logoutButton">🔒 Cerrar sesión</button>
-  <input type="file" id="uploadInput" accept="video/mp4">
-
-  <div class="centered">
-    <form id="loginForm">
-      <input type="text" id="loginUser" placeholder="Usuario" required>
-      <input type="password" id="loginPass" placeholder="Contraseña" required>
-      <br>
+  <main>
+    <!-- Formulario de Login -->
+    <form id="login-form">
+      <h2>🔐 Iniciar Sesión</h2>
+      <input type="text" id="login-username" placeholder="Usuario" required />
+      <input type="password" id="login-password" placeholder="Contraseña" required />
       <button type="submit">Entrar</button>
-      <button type="button" onclick="showRegister()">Registrarse</button>
+      <p id="login-msg"></p>
+      <p><a href="#" id="go-register">¿No tienes cuenta? Regístrate</a></p>
     </form>
 
-    <form id="registerForm" style="display:none;">
-      <input type="text" id="regUser" placeholder="Nuevo usuario" required>
-      <input type="password" id="regPass" placeholder="Nueva contraseña" required>
-      <br>
-      <button type="submit">Crear cuenta</button>
-      <button type="button" onclick="hideRegister()">Cancelar</button>
+    <!-- Formulario de Registro -->
+    <form id="register-form" class="hidden">
+      <h2>📝 Registro</h2>
+      <input type="text" id="register-username" placeholder="Nuevo usuario" required />
+      <input type="password" id="register-password" placeholder="Nueva contraseña" required />
+      <button type="submit">Registrarse</button>
+      <p id="register-msg"></p>
+      <p><a href="#" id="go-login">¿Ya tienes cuenta? Inicia sesión</a></p>
     </form>
 
-    <div id="directoContainer" style="display:none;">
-      <div class="video-wrapper">
-        <video id="liveVideo" autoplay muted playsinline></video>
-        <div class="live-indicator">🔴 EN VIVO</div>
-      </div>
+    <!-- Pantalla de Bienvenida -->
+    <section id="welcome-screen" class="hidden">
+      <h2>🎮 ¡Bienvenido, <span id="welcome-user"></span>!</h2>
+      <p>Prepárate para comenzar tu aventura.</p>
+      <button id="logout-btn">Cerrar sesión</button>
+    </section>
+  </main>
 
-      <div class="chat-box" id="chat"></div>
-
-      <div class="chat-box" id="comments">
-        <h3>💬 Comentarios</h3>
-        <div id="commentList"></div>
-        <form id="commentForm">
-          <input type="text" id="commentInput" placeholder="Escribe tu opinión..." required>
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    Plataforma Gamer de Vicente © 2025
-  </footer>
-
-  <script>
-    const logoutButton = document.getElementById('logoutButton');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const videoElement = document.getElementById('liveVideo');
-    const container = document.getElementById('directoContainer');
-    const chat = document.getElementById('chat');
-    const uploadButton = document.getElementById('uploadButton');
-    const uploadInput = document.getElementById('uploadInput');
-    const searchBar = document.getElementById('searchBar');
-    const commentForm = document.getElementById('commentForm');
-    const commentInput = document.getElementById('commentInput');
-    const commentList = document.getElementById('commentList');
-
-    let videoURL = null;
-    let currentUser = localStorage.getItem('currentUser') || '';
-    let users = JSON.parse(localStorage.getItem('users')) || {};
-
-    function showRegister() {
-      loginForm.style.display = 'none';
-      registerForm.style.display = 'block';
-    }
-
-    function hideRegister() {
-      registerForm.style.display = 'none';
-      loginForm.style.display = 'block';
-    }
-
-    registerForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const user = document.getElementById('regUser').value.trim();
-      const pass = document.getElementById('regPass').value;
-
-      if (!user || !pass) return;
-
-      if (users[user]) {
-        alert('Ese usuario ya existe');
-        return;
-      }
-
-      users[user] = pass;
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('Cuenta creada con éxito');
-      hideRegister();
-    });
-
-    loginForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const user = document.getElementById('loginUser').value.trim();
-      const pass = document.getElementById('loginPass').value;
-
-      if (users[user] && users[user] === pass) {
-        currentUser = user;
-        localStorage.setItem('currentUser', user);
-        loginForm.style.display = 'none';
-        uploadButton.style.display = 'inline-block';
-        searchBar.style.display = 'block';
-        logoutButton.style.display = 'inline-block';
-
-        document.querySelectorAll('.centered p').forEach(p => p.remove());
-        const welcome = document.createElement('p');
-        welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
-        welcome.style.marginBottom = '20px';
-        welcome.style.textAlign = 'center';
-        document.querySelector('.centered').insertBefore(welcome, container);
-      } else {
-        alert('Usuario o contraseña incorrectos');
-      }
-    });
-
-    if (currentUser) {
-      loginForm.style.display = 'none';
-      uploadButton.style.display = 'inline-block';
-      searchBar.style.display = 'block';
-      logoutButton.style.display = 'inline-block';
-
-      document.querySelectorAll('.centered p').forEach(p => p.remove());
-      const welcome = document.createElement('p');
-      welcome.textContent = `👾 Hola, ${currentUser}. ¡Sube tu partida para emitirla como directo!`;
-      welcome.style.marginBottom = '20px';
-      welcome.style.textAlign = 'center';
-      document.querySelector('.centered').insertBefore(welcome, container);
-    }
-
-    uploadButton.addEventListener('click', () => {
-      uploadInput.click();
-    });
-
-    uploadInput.addEventListener('change', () => {
-      const file = uploadInput.files[0];
-      if (!file) return;
-
-      videoURL = URL.createObjectURL(file);
-      videoElement.src = videoURL;
-
-      container.style.display = 'block';
-      videoElement.controls = false;
-      videoElement.play();
-      videoElement.addEventListener('pause', () => videoElement.play());
-
-      const metadata = {
-        id: 'directo_' + Date.now(),
-        title: file.name,
-        isLive: true,
-        startTime: new Date().toISOString(),
-        videoUrl: videoURL,
-        user: currentUser
-      };
-
-      console.log('📡 Publicado como DIRECTO:', metadata);
-
-      const saludo = document.createElement('div');
-      saludo.className = 'chat-message';
-      saludo.innerHTML = `<span class="username">${currentUser}:</span> <span class="message">¡Bienvenidos a mi directo gamer!</span>`;
-      chat.appendChild(saludo);
-    });
-
-    videoElement.addEventListener('ended', () => {
-      container.style.display = 'none';
-      if (videoURL) {
-        URL.revokeObjectURL(videoURL);
-        console.log('🗑️ Vídeo borrado del sistema');
-      }
-    });
-
-    commentForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const text = commentInput.value.trim();
-      if (!text || !currentUser) return;
-
-      const comment = document.createElement('div');
-      comment.className = 'chat-message';
-      comment.innerHTML = `<span class="username">${currentUser}:</span> <span class="message">${text}</span>`;
-      commentList.appendChild(comment);
-      commentInput.value = '';
-    });
-
-    logoutButton.addEventListener('click', () => {
-      localStorage.removeItem('currentUser');
-      currentUser = '';
-
-      container.style.display = 'none';
-      uploadButton.style.display = 'none';
-      searchBar.style.display = 'none';
-      logoutButton.style.display = 'none';
-      loginForm.style.display = 'block';
-
-      chat.innerHTML = '';
-      commentList.innerHTML = '';
-      document.querySelectorAll('.centered p').forEach(p => p.remove());
-    });
-  </script>
+  <script src="script.js"></script>
+</body>
+</html>
