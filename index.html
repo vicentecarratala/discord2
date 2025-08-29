@@ -35,7 +35,7 @@
       border: 2px solid #ff00cc;
       margin-top: 10px;
     }
-    #comentarios {
+    #comentarios, #ias {
       margin-top: 20px;
     }
     .comentario {
@@ -50,6 +50,21 @@
       color: #ff00cc;
       font-weight: bold;
     }
+    .perfilIA {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+    }
+    .perfilIA h3 {
+      margin: 0;
+      color: #00ffcc;
+    }
+    .perfilIA p {
+      margin: 5px 0;
+      color: #ccc;
+    }
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
   </style>
 </head>
@@ -63,14 +78,18 @@
   <input type="file" accept="video/*" id="videoInput">
   <video id="videoPlayer" controls></video>
 
-  <button onclick="iniciarSimulacionConContexto()">Activar espectadores IA</button>
+  <button onclick="mostrarIAs()">Mostrar espectadores IA</button>
+  <div id="ias"></div>
 
+  <button onclick="iniciarSimulacionConContexto()">Activar comentarios IA</button>
   <div id="comentarios"></div>
 
   <script>
     const IAs = [
       {
         nombre: "ShadowBot",
+        estilo: "Técnico",
+        descripcion: "Analiza calidad visual, rendimiento y detalles técnicos.",
         frases: {
           gameplay: ["Buen uso del ángulo de cámara.", "FPS estables, se nota calidad.", "La iluminación está bien calibrada."],
           vlog: ["Me encantó cómo lo contaste, Vicente.", "Qué bonito se ve el atardecer 🌅", "¡Qué vibes más relajantes!"],
@@ -80,6 +99,8 @@
       },
       {
         nombre: "PixelQueen",
+        estilo: "Emocional",
+        descripcion: "Reacciona con entusiasmo y sensibilidad a lo que ve.",
         frases: {
           gameplay: ["¡Me emocioné con esa jugada!", "Tu energía es contagiosa 💖", "Esto me dio chills gamer 😍"],
           vlog: ["Qué buena onda transmites 😄", "Me dieron ganas de salir también", "¡Qué lugar más bonito!"],
@@ -89,6 +110,8 @@
       },
       {
         nombre: "NeoJester",
+        estilo: "Bromista",
+        descripcion: "Siempre encuentra el lado divertido y hace comentarios graciosos.",
         frases: {
           gameplay: ["¿Eso fue un bug o un superpoder?", "Me reí más que viendo memes de gatos.", "Si esto fuera PvP, ya estarías en el top 10."],
           vlog: ["Ese momento fue oro puro 😂", "Tu perro se robó el show 🐶", "¡Qué risa con lo del helado!"],
@@ -110,6 +133,17 @@
       if (desc.includes("vlog") || desc.includes("día") || desc.includes("playa") || desc.includes("valencia")) return "vlog";
       if (desc.includes("tutorial") || desc.includes("cómo") || desc.includes("explico")) return "tutorial";
       return "general";
+    }
+
+    function mostrarIAs() {
+      const contenedor = document.getElementById('ias');
+      contenedor.innerHTML = "";
+      IAs.forEach(ia => {
+        const div = document.createElement('div');
+        div.className = 'perfilIA';
+        div.innerHTML = `<h3>${ia.nombre}</h3><p><strong>Estilo:</strong> ${ia.estilo}</p><p>${ia.descripcion}</p>`;
+        contenedor.appendChild(div);
+      });
     }
 
     function iniciarSimulacionConContexto() {
