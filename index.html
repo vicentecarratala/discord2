@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Zona Gamer IA Dinámica</title>
+  <title>IA que escucha y comenta</title>
   <style>
     body {
       background: #0d0d0d;
@@ -14,7 +14,7 @@
       color: #ff00cc;
       text-shadow: 0 0 5px #ff00cc;
     }
-    input, button, textarea {
+    input, button {
       margin: 10px 0;
       padding: 10px;
       width: 100%;
@@ -50,29 +50,20 @@
       color: #ff00cc;
       font-weight: bold;
     }
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
   </style>
 </head>
 <body>
 
-  <h2>🚀 Transmisión Gamer IA Dinámica</h2>
-
-  <label for="descripcion">📝 Describe tu video:</label>
-  <textarea id="descripcion" rows="3" placeholder="Ej: Estoy hablando sobre mi paseo por Valencia..."></textarea>
+  <h2>🎧 IA que escucha y comenta tu video</h2>
 
   <input type="file" accept="video/*" id="videoInput">
   <video id="videoPlayer" controls></video>
 
-  <button onclick="iniciarSimulacion()">Activar espectadores IA</button>
+  <button onclick="iniciarEscucha()">Activar escucha IA</button>
   <div id="comentarios"></div>
 
   <script>
-    const IAs = [
-      { nombre: "ShadowBot", estilo: "técnico" },
-      { nombre: "PixelQueen", estilo: "emocional" },
-      { nombre: "NeoJester", estilo: "bromista" },
-      { nombre: "EchoNova", estilo: "poético" }
-    ];
+    const IAs = ["ShadowBot", "PixelQueen", "NeoJester", "EchoNova"];
 
     document.getElementById('videoInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -80,47 +71,52 @@
       document.getElementById('videoPlayer').src = url;
     });
 
-    function iniciarSimulacion() {
-      const descripcion = document.getElementById('descripcion').value.toLowerCase();
-      let tiempo = 2000;
+    function iniciarEscucha() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
+        return;
+      }
 
-      IAs.forEach(ia => {
-        for (let i = 0; i < 3; i++) {
-          const delay = tiempo + Math.floor(Math.random() * 4000);
-          setTimeout(() => {
-            const comentario = generarComentario(ia, descripcion);
-            mostrarComentario(ia.nombre, comentario);
-          }, delay);
-          tiempo += 3000;
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = function(event) {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            const texto = event.results[i][0].transcript.trim();
+            generarComentarioIA(texto);
+          }
         }
-      });
+      };
+
+      recognition.onerror = function(event) {
+        console.error("Error de reconocimiento:", event.error);
+      };
+
+      recognition.start();
+      alert("IA escuchando... Reproduce tu video en voz alta para que lo capte.");
     }
 
-    function generarComentario(ia, descripcion) {
-      const contexto = descripcion.includes("juego") || descripcion.includes("gameplay") ? "gameplay"
-                    : descripcion.includes("vlog") || descripcion.includes("día") || descripcion.includes("valencia") ? "vlog"
-                    : descripcion.includes("tutorial") || descripcion.includes("cómo") ? "tutorial"
-                    : "general";
+    function generarComentarioIA(textoEscuchado) {
+      const nombre = IAs[Math.floor(Math.random() * IAs.length)];
+      const inicio = [
+        "Interesante lo que dijiste sobre",
+        "Me gustó cuando hablaste de",
+        "Buen punto sobre",
+        "Eso que mencionaste sobre"
+      ];
+      const cierre = [
+        "¡Sigue así!",
+        "Eso me hizo pensar.",
+        "Muy bien expresado.",
+        "👏👏👏"
+      ];
 
-      const frasesInicio = {
-        técnico: ["Analizando el contenido...", "Detalles técnicos detectados:", "Desde el punto de vista visual:"],
-        emocional: ["¡Qué emoción!", "Esto me hizo sentir algo especial:", "Me tocó el corazón:"],
-        bromista: ["Jajaja, esto fue épico:", "No puedo parar de reír:", "¿Esto fue real? Porque..."],
-        poético: ["Como un poema digital:", "Esto fluye como una melodía:", "Tu video tiene alma:"]
-      };
-
-      const reacciones = {
-        gameplay: ["gran jugada", "movimiento preciso", "estrategia impecable", "acción intensa"],
-        vlog: ["atmósfera relajante", "vibes muy chill", "historia personal", "momento auténtico"],
-        tutorial: ["explicación clara", "paso a paso útil", "contenido educativo", "guía excelente"],
-        general: ["contenido interesante", "edición cuidada", "estilo único", "presentación sólida"]
-      };
-
-      const inicio = frasesInicio[ia.estilo][Math.floor(Math.random() * frasesInicio[ia.estilo].length)];
-      const reaccion = reacciones[contexto][Math.floor(Math.random() * reacciones[contexto].length)];
-      const extra = ["¡Sigue así!", "Me encantó.", "Muy bien hecho.", "👏👏👏"][Math.floor(Math.random() * 4)];
-
-      return `${inicio} ${reaccion}. ${extra}`;
+      const fragmento = textoEscuchado.split(" ").slice(0, 6).join(" ") + "...";
+      const comentario = `${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
+      mostrarComentario(nombre, comentario);
     }
 
     function mostrarComentario(nombre, texto) {
