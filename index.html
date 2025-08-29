@@ -1,41 +1,141 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Gamer</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Zona Gamer IA Multiespectador</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Orbitron', sans-serif;
+      padding: 20px;
+    }
+    h2 {
+      color: #ff00cc;
+      text-shadow: 0 0 5px #ff00cc;
+    }
+    input, button, textarea {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+      background-color: #222;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+    }
+    video {
+      max-width: 100%;
+      border: 2px solid #ff00cc;
+      margin-top: 10px;
+    }
+    #comentarios {
+      margin-top: 20px;
+    }
+    .comentario {
+      background: #111;
+      border-left: 4px solid #00ffcc;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .nombreIA {
+      color: #ff00cc;
+      font-weight: bold;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  </style>
 </head>
 <body>
-  <main>
-    <!-- Formulario de Login -->
-    <form id="login-form">
-      <h2>🔐 Iniciar Sesión</h2>
-      <input type="text" id="login-username" placeholder="Usuario" required />
-      <input type="password" id="login-password" placeholder="Contraseña" required />
-      <button type="submit">Entrar</button>
-      <p id="login-msg"></p>
-      <p><a href="#" id="go-register">¿No tienes cuenta? Regístrate</a></p>
-    </form>
 
-    <!-- Formulario de Registro -->
-    <form id="register-form" class="hidden">
-      <h2>📝 Registro</h2>
-      <input type="text" id="register-username" placeholder="Nuevo usuario" required />
-      <input type="password" id="register-password" placeholder="Nueva contraseña" required />
-      <button type="submit">Registrarse</button>
-      <p id="register-msg"></p>
-      <p><a href="#" id="go-login">¿Ya tienes cuenta? Inicia sesión</a></p>
-    </form>
+  <h2>🚀 Transmisión Gamer Privada</h2>
 
-    <!-- Pantalla de Bienvenida -->
-    <section id="welcome-screen" class="hidden">
-      <h2>🎮 ¡Bienvenido, <span id="welcome-user"></span>!</h2>
-      <p>Prepárate para comenzar tu aventura.</p>
-      <button id="logout-btn">Cerrar sesión</button>
-    </section>
-  </main>
+  <label for="descripcion">📝 Describe tu video:</label>
+  <textarea id="descripcion" rows="3" placeholder="Ej: Este es un vlog sobre mi paseo por Valencia..."></textarea>
 
-  <script src="script.js"></script>
+  <input type="file" accept="video/*" id="videoInput">
+  <video id="videoPlayer" controls></video>
+
+  <button onclick="iniciarSimulacionConContexto()">Activar espectadores IA</button>
+
+  <div id="comentarios"></div>
+
+  <script>
+    const IAs = [
+      {
+        nombre: "ShadowBot",
+        frases: {
+          gameplay: ["Buen uso del ángulo de cámara.", "FPS estables, se nota calidad.", "La iluminación está bien calibrada."],
+          vlog: ["Me encantó cómo lo contaste, Vicente.", "Qué bonito se ve el atardecer 🌅", "¡Qué vibes más relajantes!"],
+          tutorial: ["Muy clara la explicación.", "Buen ritmo para seguir el paso a paso.", "Esto me ayudó bastante, gracias."],
+          general: ["Interesante contenido.", "Me gustó la edición.", "Buen trabajo, sigue así."]
+        }
+      },
+      {
+        nombre: "PixelQueen",
+        frases: {
+          gameplay: ["¡Me emocioné con esa jugada!", "Tu energía es contagiosa 💖", "Esto me dio chills gamer 😍"],
+          vlog: ["Qué buena onda transmites 😄", "Me dieron ganas de salir también", "¡Qué lugar más bonito!"],
+          tutorial: ["Explicas como una pro 💡", "¡Esto debería estar en trending!", "Muy útil para principiantes."],
+          general: ["¡Buen contenido!", "Me encantó tu estilo", "Súper agradable de ver."]
+        }
+      },
+      {
+        nombre: "NeoJester",
+        frases: {
+          gameplay: ["¿Eso fue un bug o un superpoder?", "Me reí más que viendo memes de gatos.", "Si esto fuera PvP, ya estarías en el top 10."],
+          vlog: ["Ese momento fue oro puro 😂", "Tu perro se robó el show 🐶", "¡Qué risa con lo del helado!"],
+          tutorial: ["¿Y el diploma? Porque esto fue una clase magistral.", "¡Profe Vicente!", "Me siento más sabio ahora."],
+          general: ["Buen rollo en este video", "Me sacaste una sonrisa", "¡Grande Vicente!"]
+        }
+      }
+    ];
+
+    document.getElementById('videoInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      document.getElementById('videoPlayer').src = url;
+    });
+
+    function detectarTipo(descripcion) {
+      const desc = descripcion.toLowerCase();
+      if (desc.includes("juego") || desc.includes("gameplay") || desc.includes("partida")) return "gameplay";
+      if (desc.includes("vlog") || desc.includes("día") || desc.includes("playa") || desc.includes("valencia")) return "vlog";
+      if (desc.includes("tutorial") || desc.includes("cómo") || desc.includes("explico")) return "tutorial";
+      return "general";
+    }
+
+    function iniciarSimulacionConContexto() {
+      const descripcion = document.getElementById('descripcion').value;
+      const tipo = detectarTipo(descripcion);
+      let tiempoBase = 2000;
+
+      IAs.forEach(ia => {
+        const frases = ia.frases[tipo] || ia.frases.general;
+        frases.forEach(frase => {
+          const delay = tiempoBase + Math.floor(Math.random() * 4000);
+          setTimeout(() => {
+            mostrarComentario(ia.nombre, frase);
+          }, delay);
+          tiempoBase += 3000;
+        });
+      });
+    }
+
+    function mostrarComentario(nombre, texto) {
+      const div = document.createElement('div');
+      div.className = 'comentario';
+      div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
+      document.getElementById('comentarios').appendChild(div);
+    }
+  </script>
+
 </body>
 </html>
