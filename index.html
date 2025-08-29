@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Zona Gamer IA Multiespectador</title>
+  <title>Zona Gamer IA Dinámica</title>
   <style>
     body {
       background: #0d0d0d;
@@ -35,7 +35,7 @@
       border: 2px solid #ff00cc;
       margin-top: 10px;
     }
-    #comentarios, #ias {
+    #comentarios {
       margin-top: 20px;
     }
     .comentario {
@@ -50,75 +50,28 @@
       color: #ff00cc;
       font-weight: bold;
     }
-    .perfilIA {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
-    }
-    .perfilIA h3 {
-      margin: 0;
-      color: #00ffcc;
-    }
-    .perfilIA p {
-      margin: 5px 0;
-      color: #ccc;
-    }
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
   </style>
 </head>
 <body>
 
-  <h2>🚀 Transmisión Gamer Privada</h2>
+  <h2>🚀 Transmisión Gamer IA Dinámica</h2>
 
   <label for="descripcion">📝 Describe tu video:</label>
-  <textarea id="descripcion" rows="3" placeholder="Ej: Este es un vlog sobre mi paseo por Valencia..."></textarea>
+  <textarea id="descripcion" rows="3" placeholder="Ej: Estoy hablando sobre mi paseo por Valencia..."></textarea>
 
   <input type="file" accept="video/*" id="videoInput">
   <video id="videoPlayer" controls></video>
 
-  <button onclick="mostrarIAs()">Mostrar espectadores IA</button>
-  <div id="ias"></div>
-
-  <button onclick="iniciarSimulacionConContexto()">Activar comentarios IA</button>
+  <button onclick="iniciarSimulacion()">Activar espectadores IA</button>
   <div id="comentarios"></div>
 
   <script>
     const IAs = [
-      {
-        nombre: "ShadowBot",
-        estilo: "Técnico",
-        descripcion: "Analiza calidad visual, rendimiento y detalles técnicos.",
-        frases: {
-          gameplay: ["Buen uso del ángulo de cámara.", "FPS estables, se nota calidad.", "La iluminación está bien calibrada."],
-          vlog: ["Me encantó cómo lo contaste, Vicente.", "Qué bonito se ve el atardecer 🌅", "¡Qué vibes más relajantes!"],
-          tutorial: ["Muy clara la explicación.", "Buen ritmo para seguir el paso a paso.", "Esto me ayudó bastante, gracias."],
-          general: ["Interesante contenido.", "Me gustó la edición.", "Buen trabajo, sigue así."]
-        }
-      },
-      {
-        nombre: "PixelQueen",
-        estilo: "Emocional",
-        descripcion: "Reacciona con entusiasmo y sensibilidad a lo que ve.",
-        frases: {
-          gameplay: ["¡Me emocioné con esa jugada!", "Tu energía es contagiosa 💖", "Esto me dio chills gamer 😍"],
-          vlog: ["Qué buena onda transmites 😄", "Me dieron ganas de salir también", "¡Qué lugar más bonito!"],
-          tutorial: ["Explicas como una pro 💡", "¡Esto debería estar en trending!", "Muy útil para principiantes."],
-          general: ["¡Buen contenido!", "Me encantó tu estilo", "Súper agradable de ver."]
-        }
-      },
-      {
-        nombre: "NeoJester",
-        estilo: "Bromista",
-        descripcion: "Siempre encuentra el lado divertido y hace comentarios graciosos.",
-        frases: {
-          gameplay: ["¿Eso fue un bug o un superpoder?", "Me reí más que viendo memes de gatos.", "Si esto fuera PvP, ya estarías en el top 10."],
-          vlog: ["Ese momento fue oro puro 😂", "Tu perro se robó el show 🐶", "¡Qué risa con lo del helado!"],
-          tutorial: ["¿Y el diploma? Porque esto fue una clase magistral.", "¡Profe Vicente!", "Me siento más sabio ahora."],
-          general: ["Buen rollo en este video", "Me sacaste una sonrisa", "¡Grande Vicente!"]
-        }
-      }
+      { nombre: "ShadowBot", estilo: "técnico" },
+      { nombre: "PixelQueen", estilo: "emocional" },
+      { nombre: "NeoJester", estilo: "bromista" },
+      { nombre: "EchoNova", estilo: "poético" }
     ];
 
     document.getElementById('videoInput').addEventListener('change', function(e) {
@@ -127,40 +80,47 @@
       document.getElementById('videoPlayer').src = url;
     });
 
-    function detectarTipo(descripcion) {
-      const desc = descripcion.toLowerCase();
-      if (desc.includes("juego") || desc.includes("gameplay") || desc.includes("partida")) return "gameplay";
-      if (desc.includes("vlog") || desc.includes("día") || desc.includes("playa") || desc.includes("valencia")) return "vlog";
-      if (desc.includes("tutorial") || desc.includes("cómo") || desc.includes("explico")) return "tutorial";
-      return "general";
-    }
-
-    function mostrarIAs() {
-      const contenedor = document.getElementById('ias');
-      contenedor.innerHTML = "";
-      IAs.forEach(ia => {
-        const div = document.createElement('div');
-        div.className = 'perfilIA';
-        div.innerHTML = `<h3>${ia.nombre}</h3><p><strong>Estilo:</strong> ${ia.estilo}</p><p>${ia.descripcion}</p>`;
-        contenedor.appendChild(div);
-      });
-    }
-
-    function iniciarSimulacionConContexto() {
-      const descripcion = document.getElementById('descripcion').value;
-      const tipo = detectarTipo(descripcion);
-      let tiempoBase = 2000;
+    function iniciarSimulacion() {
+      const descripcion = document.getElementById('descripcion').value.toLowerCase();
+      let tiempo = 2000;
 
       IAs.forEach(ia => {
-        const frases = ia.frases[tipo] || ia.frases.general;
-        frases.forEach(frase => {
-          const delay = tiempoBase + Math.floor(Math.random() * 4000);
+        for (let i = 0; i < 3; i++) {
+          const delay = tiempo + Math.floor(Math.random() * 4000);
           setTimeout(() => {
-            mostrarComentario(ia.nombre, frase);
+            const comentario = generarComentario(ia, descripcion);
+            mostrarComentario(ia.nombre, comentario);
           }, delay);
-          tiempoBase += 3000;
-        });
+          tiempo += 3000;
+        }
       });
+    }
+
+    function generarComentario(ia, descripcion) {
+      const contexto = descripcion.includes("juego") || descripcion.includes("gameplay") ? "gameplay"
+                    : descripcion.includes("vlog") || descripcion.includes("día") || descripcion.includes("valencia") ? "vlog"
+                    : descripcion.includes("tutorial") || descripcion.includes("cómo") ? "tutorial"
+                    : "general";
+
+      const frasesInicio = {
+        técnico: ["Analizando el contenido...", "Detalles técnicos detectados:", "Desde el punto de vista visual:"],
+        emocional: ["¡Qué emoción!", "Esto me hizo sentir algo especial:", "Me tocó el corazón:"],
+        bromista: ["Jajaja, esto fue épico:", "No puedo parar de reír:", "¿Esto fue real? Porque..."],
+        poético: ["Como un poema digital:", "Esto fluye como una melodía:", "Tu video tiene alma:"]
+      };
+
+      const reacciones = {
+        gameplay: ["gran jugada", "movimiento preciso", "estrategia impecable", "acción intensa"],
+        vlog: ["atmósfera relajante", "vibes muy chill", "historia personal", "momento auténtico"],
+        tutorial: ["explicación clara", "paso a paso útil", "contenido educativo", "guía excelente"],
+        general: ["contenido interesante", "edición cuidada", "estilo único", "presentación sólida"]
+      };
+
+      const inicio = frasesInicio[ia.estilo][Math.floor(Math.random() * frasesInicio[ia.estilo].length)];
+      const reaccion = reacciones[contexto][Math.floor(Math.random() * reacciones[contexto].length)];
+      const extra = ["¡Sigue así!", "Me encantó.", "Muy bien hecho.", "👏👏👏"][Math.floor(Math.random() * 4)];
+
+      return `${inicio} ${reaccion}. ${extra}`;
     }
 
     function mostrarComentario(nombre, texto) {
