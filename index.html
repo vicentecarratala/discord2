@@ -234,7 +234,20 @@
       } else {
         respuesta = razonar(texto, nombre);
       }
+
       mostrarComentario(nombre, respuesta);
+
+      // Likes automáticos con probabilidad
+      if (Math.random() < 0.3) {
+        totalLikes++;
+        mostrarComentario(nombre, "dio like ❤️");
+
+        if ([10, 100, 200, 300].includes(totalLikes)) {
+          mostrarEvento(`${nombre} dio el like número ${totalLikes} 🎉`);
+        }
+
+        document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
+      }
     });
   }
 
