@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Directo IA Mejorado</title>
+  <title>🎮 Directo IA Masivo</title>
   <style>
     body {
       margin: 0;
@@ -44,10 +44,11 @@
     }
     .comentario {
       background: #222;
-      margin: 5px 0;
-      padding: 8px;
+      margin: 3px 0;
+      padding: 6px;
       border-radius: 4px;
       color: #fff;
+      font-size: 14px;
     }
     .nombreIA {
       color: #ff00cc;
@@ -93,13 +94,15 @@
   let mediaRecorder;
   let recordedChunks = [];
 
-  // Generar 40 nombres IA únicos
-  const IAs = Array.from({ length: 40 }, (_, i) => {
-    const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum"];
-    const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester"];
-    const nombre = prefijos[i % prefijos.length] + sufijos[i % sufijos.length];
-    return nombre + (i > 9 ? i : "");
-  });
+  // Generar más de 100 nombres IA únicos
+  const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum", "Cyber", "Synth", "Shadow", "Flux", "Core","Blader"];
+  const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester", "Storm", "Spark", "Pulse", "Drift", "Loop","X"];
+  const IAs = [];
+
+  for (let i = 0; i < 120; i++) {
+    const nombre = prefijos[i % prefijos.length] + sufijos[i % sufijos.length] + i;
+    IAs.push(nombre);
+  }
 
   async function compartirPantalla() {
     try {
