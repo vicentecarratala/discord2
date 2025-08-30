@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Directo IA con Pantalla Compartida</title>
+  <title>🎮 Directo IA Mejorado</title>
   <style>
     body {
       margin: 0;
@@ -15,9 +15,8 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-color: #111;
     }
-    #stream {
+    video {
       position: absolute;
       top: 0;
       left: 0;
@@ -25,6 +24,10 @@
       height: 100%;
       object-fit: cover;
       border: none;
+    }
+    #replay {
+      display: none;
+      z-index: 5;
     }
     #comentarios {
       position: absolute;
@@ -76,6 +79,7 @@
 
 <div id="pantalla">
   <video id="stream" autoplay muted></video>
+  <video id="replay" controls></video>
   <div id="comentarios"></div>
   <div id="controles">
     <button onclick="compartirPantalla()">🖥️ Compartir pantalla</button>
@@ -86,12 +90,42 @@
 
 <script>
   let recognition;
-  const IAs = ["ShadowBot", "PixelQueen", "NeoJester", "EchoNova"];
+  let mediaRecorder;
+  let recordedChunks = [];
+
+  // Generar 40 nombres IA únicos
+  const IAs = Array.from({ length: 40 }, (_, i) => {
+    const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum"];
+    const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester"];
+    const nombre = prefijos[i % prefijos.length] + sufijos[i % sufijos.length];
+    return nombre + (i > 9 ? i : "");
+  });
 
   async function compartirPantalla() {
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: true });
       document.getElementById('stream').srcObject = stream;
+
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 2500000
+      });
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) recordedChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const replay = document.getElementById('replay');
+        replay.src = url;
+        replay.style.display = 'block';
+        document.getElementById('stream').style.display = 'none';
+      };
+
+      mediaRecorder.start();
     } catch (err) {
       alert("No se pudo compartir la pantalla: " + err.message);
     }
@@ -126,24 +160,23 @@
   }
 
   function terminarDirecto() {
-    // Detener reconocimiento de voz
     if (recognition && recognition.stop) {
       recognition.stop();
       recognition = null;
     }
 
-    // Detener stream de pantalla
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+
     const video = document.getElementById('stream');
     const tracks = video.srcObject?.getTracks();
     if (tracks) {
       tracks.forEach(track => track.stop());
     }
 
-    // Limpiar el video
     video.srcObject = null;
-
-    // Mensaje de cierre
-    alert("🎬 Directo finalizado. Gracias por compartir tu pantalla.");
+    alert("🎬 Directo finalizado. Reproduciendo grabación.");
   }
 
   function responderIA(texto) {
@@ -159,7 +192,7 @@
       return `${nombre}: Tienes razón, se nota que estás puliendo técnica.`;
     }
     if (texto.includes("difícil") || texto.includes("complicado")) {
-      return `${nombre}: Sí, ese momento fue un reto. Lo manejaste bien.`;
+      return `${nombre}: Ese momento fue un reto. Lo manejaste bien.`;
     }
     if (texto.includes("victoria") || texto.includes("gané")) {
       return `${nombre}: ¡Felicidades! Esa victoria fue merecida.`;
