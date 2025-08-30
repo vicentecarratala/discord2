@@ -2,23 +2,59 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Directo Gamer IA</title>
+  <title>🎮 Directo IA con Pantalla Compartida</title>
   <style>
     body {
+      margin: 0;
       background: #0d0d0d;
       color: #00ffcc;
       font-family: 'Orbitron', sans-serif;
-      padding: 20px;
+      overflow: hidden;
     }
-    h2 {
-      color: #ff00cc;
-      text-shadow: 0 0 5px #ff00cc;
+    #pantalla {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #111;
     }
-    video {
+    #stream {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 600px;
-      border: 2px solid #ff00cc;
-      margin-bottom: 10px;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+    #comentarios {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 60%;
+      max-height: 80%;
+      overflow-y: auto;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-left: 4px solid #00ffcc;
+      border-radius: 6px;
+      z-index: 10;
+    }
+    .comentario {
+      background: #222;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .nombreIA {
+      color: #ff00cc;
+      font-weight: bold;
+    }
+    #controles {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
     }
     button {
       padding: 10px;
@@ -34,129 +70,117 @@
       color: #000;
       cursor: pointer;
     }
-    #comentarios {
-      margin-top: 20px;
-    }
-    .comentario {
-      background: #111;
-      border-left: 4px solid #00ffcc;
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 4px;
-      color: #fff;
-    }
-    .nombreIA {
-      color: #ff00cc;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
 
-  <h2>🎧 Transmisión en vivo con espectadores IA</h2>
-
-  <video id="live" autoplay muted></video>
-  <video id="replay" controls></video>
-
-  <div>
-    <button onclick="startLive()">🎬 Empezar directo</button>
-    <button onclick="stopLive()">🛑 Terminar y reproducir</button>
-    <button onclick="activarEscucha()">🎙️ Activar escucha IA</button>
-  </div>
-
+<div id="pantalla">
+  <video id="stream" autoplay muted></video>
   <div id="comentarios"></div>
+  <div id="controles">
+    <button onclick="compartirPantalla()">🖥️ Compartir pantalla</button>
+    <button onclick="activarEscucha()">🎙️ Escuchar IA</button>
+    <button onclick="terminarDirecto()">🛑 Terminar</button>
+  </div>
+</div>
 
-  <script>
-    let mediaRecorder;
-    let recordedChunks = [];
-    let recognition;
+<script>
+  let recognition;
+  const IAs = ["ShadowBot", "PixelQueen", "NeoJester", "EchoNova"];
 
-    const IAs = ["ShadowBot", "PixelQueen", "NeoJester", "EchoNova"];
+  async function compartirPantalla() {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      document.getElementById('stream').srcObject = stream;
+    } catch (err) {
+      alert("No se pudo compartir la pantalla: " + err.message);
+    }
+  }
 
-    async function startLive() {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      document.getElementById('live').srcObject = stream;
-
-      recordedChunks = [];
-      mediaRecorder = new MediaRecorder(stream);
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) recordedChunks.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        document.getElementById('replay').src = url;
-      };
-
-      mediaRecorder.start();
+  function activarEscucha() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
+      return;
     }
 
-    function stopLive() {
-      if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
-      }
-      if (recognition) {
-        recognition.stop();
-      }
-    }
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "es-ES";
+    recognition.continuous = true;
+    recognition.interimResults = false;
 
-    function activarEscucha() {
-      if (!('webkitSpeechRecognition' in window)) {
-        alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
-        return;
-      }
-
-      recognition = new webkitSpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = true;
-      recognition.interimResults = false;
-
-      recognition.onresult = function(event) {
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            const texto = event.results[i][0].transcript.trim();
-            comentarIA(texto);
-          }
+    recognition.onresult = function(event) {
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const texto = event.results[i][0].transcript.trim();
+          responderIA(texto);
         }
-      };
+      }
+    };
 
-      recognition.onerror = function(event) {
-        console.error("Error de reconocimiento:", event.error);
-      };
+    recognition.onerror = function(event) {
+      console.error("Error de reconocimiento:", event.error);
+    };
 
-      recognition.start();
-      alert("IA escuchando... Habla durante el directo para que comenten.");
+    recognition.start();
+    alert("IA escuchando... Habla mientras compartes pantalla para que comenten.");
+  }
+
+  function terminarDirecto() {
+    // Detener reconocimiento de voz
+    if (recognition && recognition.stop) {
+      recognition.stop();
+      recognition = null;
     }
 
-    function comentarIA(textoEscuchado) {
-      IAs.forEach(nombre => {
-        const inicio = [
-          "Interesante lo que dijiste sobre",
-          "Me gustó cuando hablaste de",
-          "Buen punto sobre",
-          "Eso que mencionaste sobre"
-        ];
-        const cierre = [
-          "¡Sigue así!",
-          "Eso me hizo pensar.",
-          "Muy bien expresado.",
-          "👏👏👏"
-        ];
-        const fragmento = textoEscuchado.split(" ").slice(0, 6).join(" ") + "...";
-        const comentario = `${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
-        mostrarComentario(nombre, comentario);
-      });
+    // Detener stream de pantalla
+    const video = document.getElementById('stream');
+    const tracks = video.srcObject?.getTracks();
+    if (tracks) {
+      tracks.forEach(track => track.stop());
     }
 
-    function mostrarComentario(nombre, texto) {
-      const div = document.createElement('div');
-      div.className = 'comentario';
-      div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
-      document.getElementById('comentarios').appendChild(div);
+    // Limpiar el video
+    video.srcObject = null;
+
+    // Mensaje de cierre
+    alert("🎬 Directo finalizado. Gracias por compartir tu pantalla.");
+  }
+
+  function responderIA(texto) {
+    IAs.forEach(nombre => {
+      const respuesta = razonar(texto, nombre);
+      mostrarComentario(nombre, respuesta);
+    });
+  }
+
+  function razonar(texto, nombre) {
+    texto = texto.toLowerCase();
+    if (texto.includes("entrenamiento")) {
+      return `${nombre}: Tienes razón, se nota que estás puliendo técnica.`;
     }
-  </script>
+    if (texto.includes("difícil") || texto.includes("complicado")) {
+      return `${nombre}: Sí, ese momento fue un reto. Lo manejaste bien.`;
+    }
+    if (texto.includes("victoria") || texto.includes("gané")) {
+      return `${nombre}: ¡Felicidades! Esa victoria fue merecida.`;
+    }
+    if (texto.includes("fallo") || texto.includes("error")) {
+      return `${nombre}: Todos fallamos a veces. Lo importante es aprender.`;
+    }
+
+    const inicio = ["Interesante lo que dijiste sobre", "Buen punto sobre", "Me gustó cuando hablaste de"];
+    const cierre = ["¡Sigue así!", "Eso me hizo pensar.", "Muy bien expresado."];
+    const fragmento = texto.split(" ").slice(0, 6).join(" ") + "...";
+    return `${nombre}: ${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
+  }
+
+  function mostrarComentario(nombre, texto) {
+    const div = document.createElement('div');
+    div.className = 'comentario';
+    div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
+    document.getElementById('comentarios').appendChild(div);
+  }
+</script>
 
 </body>
 </html>
