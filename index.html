@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Directo IA Masivo</title>
+  <title>🎮 Directo IA Final</title>
   <style>
     body {
       margin: 0;
@@ -60,6 +60,37 @@
       right: 20px;
       z-index: 20;
     }
+    #likesContador {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #222;
+      padding: 10px;
+      border: 2px solid #00ffcc;
+      border-radius: 6px;
+      color: #00ffcc;
+      font-size: 16px;
+      z-index: 30;
+    }
+    #eventoEspecial {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ff00cc;
+      color: #fff;
+      padding: 20px;
+      font-size: 24px;
+      border-radius: 10px;
+      display: none;
+      z-index: 50;
+      animation: fade 2s ease-in-out;
+    }
+    @keyframes fade {
+      0% { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
+      50% { opacity: 1; transform: scale(1.1) translate(-50%, -50%); }
+      100% { opacity: 0; transform: scale(1) translate(-50%, -50%); }
+    }
     button {
       padding: 10px;
       margin: 5px;
@@ -85,18 +116,21 @@
   <div id="controles">
     <button onclick="compartirPantalla()">🖥️ Compartir pantalla</button>
     <button onclick="activarEscucha()">🎙️ Escuchar IA</button>
+    <button onclick="darLike()">❤️ Like IA</button>
     <button onclick="terminarDirecto()">🛑 Terminar</button>
   </div>
+  <div id="likesContador">Likes IA: 0</div>
+  <div id="eventoEspecial"></div>
 </div>
 
 <script>
   let recognition;
   let mediaRecorder;
   let recordedChunks = [];
+  let totalLikes = 0;
 
-  // Generar más de 100 nombres IA únicos
-  const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum", "Cyber", "Synth", "Shadow", "Flux", "Core","Blader"];
-  const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester", "Storm", "Spark", "Pulse", "Drift", "Loop","X"];
+  const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum", "Cyber", "Synth", "Shadow", "Flux", "Core"];
+  const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester", "Storm", "Spark", "Pulse", "Drift", "Loop"];
   const IAs = [];
 
   for (let i = 0; i < 120; i++) {
@@ -183,8 +217,23 @@
   }
 
   function responderIA(texto) {
+    const negativo = ["no puedo", "soy malo", "esto es un desastre", "me rindo", "no sirve", "fallé"];
+    const esNegativo = negativo.some(p => texto.toLowerCase().includes(p));
+
     IAs.forEach(nombre => {
-      const respuesta = razonar(texto, nombre);
+      let respuesta;
+      if (esNegativo) {
+        const animos = [
+          "¡No te rindas! Estás más cerca de lo que crees.",
+          "Todos fallamos, pero tú aprendes más rápido que nadie.",
+          "¡Eres un crack! Solo necesitas un respiro.",
+          "Tu esfuerzo vale más que cualquier resultado.",
+          "¡Vamos Vicente! Tienes todo para lograrlo."
+        ];
+        respuesta = `${nombre}: ${animos[Math.floor(Math.random() * animos.length)]}`;
+      } else {
+        respuesta = razonar(texto, nombre);
+      }
       mostrarComentario(nombre, respuesta);
     });
   }
@@ -215,6 +264,29 @@
     div.className = 'comentario';
     div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
     document.getElementById('comentarios').appendChild(div);
+  }
+
+  function darLike() {
+    const likesPorClick = Math.floor(Math.random() * 5) + 1;
+    for (let i = 0; i < likesPorClick; i++) {
+      const ia = IAs[Math.floor(Math.random() * IAs.length)];
+      totalLikes++;
+      mostrarComentario(ia, "dio like ❤️");
+
+      if ([10, 100, 200, 300].includes(totalLikes)) {
+        mostrarEvento(`${ia} dio el like número ${totalLikes} 🎉`);
+      }
+    }
+    document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
+  }
+
+  function mostrarEvento(texto) {
+    const evento = document.getElementById("eventoEspecial");
+    evento.textContent = texto;
+    evento.style.display = "block";
+    setTimeout(() => {
+      evento.style.display = "none";
+    }, 3000);
   }
 </script>
 
