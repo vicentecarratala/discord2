@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>IA que escucha y comenta</title>
+  <title>🎮 Directo Gamer IA</title>
   <style>
     body {
       background: #0d0d0d;
@@ -14,11 +14,15 @@
       color: #ff00cc;
       text-shadow: 0 0 5px #ff00cc;
     }
-    input, button {
-      margin: 10px 0;
-      padding: 10px;
+    video {
       width: 100%;
-      max-width: 400px;
+      max-width: 600px;
+      border: 2px solid #ff00cc;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px;
+      margin: 5px;
       background-color: #222;
       border: 1px solid #00ffcc;
       color: #00ffcc;
@@ -29,11 +33,6 @@
       background-color: #00ffcc;
       color: #000;
       cursor: pointer;
-    }
-    video {
-      max-width: 100%;
-      border: 2px solid #ff00cc;
-      margin-top: 10px;
     }
     #comentarios {
       margin-top: 20px;
@@ -54,30 +53,62 @@
 </head>
 <body>
 
-  <h2>🎧 IA que escucha y comenta tu video</h2>
+  <h2>🎧 Transmisión en vivo con espectadores IA</h2>
 
-  <input type="file" accept="video/*" id="videoInput">
-  <video id="videoPlayer" controls></video>
+  <video id="live" autoplay muted></video>
+  <video id="replay" controls></video>
 
-  <button onclick="iniciarEscucha()">Activar escucha IA</button>
+  <div>
+    <button onclick="startLive()">🎬 Empezar directo</button>
+    <button onclick="stopLive()">🛑 Terminar y reproducir</button>
+    <button onclick="activarEscucha()">🎙️ Activar escucha IA</button>
+  </div>
+
   <div id="comentarios"></div>
 
   <script>
+    let mediaRecorder;
+    let recordedChunks = [];
+    let recognition;
+
     const IAs = ["ShadowBot", "PixelQueen", "NeoJester", "EchoNova"];
 
-    document.getElementById('videoInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      document.getElementById('videoPlayer').src = url;
-    });
+    async function startLive() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('live').srcObject = stream;
 
-    function iniciarEscucha() {
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) recordedChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        document.getElementById('replay').src = url;
+      };
+
+      mediaRecorder.start();
+    }
+
+    function stopLive() {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
+      if (recognition) {
+        recognition.stop();
+      }
+    }
+
+    function activarEscucha() {
       if (!('webkitSpeechRecognition' in window)) {
         alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
         return;
       }
 
-      const recognition = new webkitSpeechRecognition();
+      recognition = new webkitSpeechRecognition();
       recognition.lang = "es-ES";
       recognition.continuous = true;
       recognition.interimResults = false;
@@ -86,7 +117,7 @@
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             const texto = event.results[i][0].transcript.trim();
-            generarComentarioIA(texto);
+            comentarIA(texto);
           }
         }
       };
@@ -96,27 +127,27 @@
       };
 
       recognition.start();
-      alert("IA escuchando... Reproduce tu video en voz alta para que lo capte.");
+      alert("IA escuchando... Habla durante el directo para que comenten.");
     }
 
-    function generarComentarioIA(textoEscuchado) {
-      const nombre = IAs[Math.floor(Math.random() * IAs.length)];
-      const inicio = [
-        "Interesante lo que dijiste sobre",
-        "Me gustó cuando hablaste de",
-        "Buen punto sobre",
-        "Eso que mencionaste sobre"
-      ];
-      const cierre = [
-        "¡Sigue así!",
-        "Eso me hizo pensar.",
-        "Muy bien expresado.",
-        "👏👏👏"
-      ];
-
-      const fragmento = textoEscuchado.split(" ").slice(0, 6).join(" ") + "...";
-      const comentario = `${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
-      mostrarComentario(nombre, comentario);
+    function comentarIA(textoEscuchado) {
+      IAs.forEach(nombre => {
+        const inicio = [
+          "Interesante lo que dijiste sobre",
+          "Me gustó cuando hablaste de",
+          "Buen punto sobre",
+          "Eso que mencionaste sobre"
+        ];
+        const cierre = [
+          "¡Sigue así!",
+          "Eso me hizo pensar.",
+          "Muy bien expresado.",
+          "👏👏👏"
+        ];
+        const fragmento = textoEscuchado.split(" ").slice(0, 6).join(" ") + "...";
+        const comentario = `${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
+        mostrarComentario(nombre, comentario);
+      });
     }
 
     function mostrarComentario(nombre, texto) {
