@@ -301,6 +301,77 @@
       evento.style.display = "none";
     }, 3000);
   }
+function responderIA(texto) {
+  const positivo = ["logré", "victoria", "mejoré", "aprendí", "gané", "conseguí", "superé", "avancé", "bien hecho", "funcionó"];
+  const negativo = ["no puedo", "soy malo", "esto es un desastre", "me rindo", "no sirve", "fallé"];
+  const textoLower = texto.toLowerCase();
+
+  IAs.forEach(nombre => {
+    let respuesta = "";
+    const elogios = [
+      "¡Eso fue épico!",
+      "Se nota tu progreso, Vicente.",
+      "¡Qué gran momento!",
+      "Tu energía es contagiosa.",
+      "¡Like automático por esa frase!"
+    ];
+    const animos = [
+      "¡No te rindas! Estás más cerca de lo que crees.",
+      "Todos fallamos, pero tú aprendes más rápido que nadie.",
+      "¡Eres un crack! Solo necesitas un respiro.",
+      "Tu esfuerzo vale más que cualquier resultado.",
+      "¡Vamos Vicente! Tienes todo para lograrlo."
+    ];
+
+    if (negativo.some(p => textoLower.includes(p))) {
+      respuesta = `${nombre}: ${animos[Math.floor(Math.random() * animos.length)]}`;
+    } else if (positivo.some(p => textoLower.includes(p))) {
+      respuesta = `${nombre}: ${elogios[Math.floor(Math.random() * elogios.length)]}`;
+    } else {
+      respuesta = razonar(texto, nombre);
+    }
+
+    mostrarComentario(nombre, respuesta);
+
+    // Todos los fans dan like con probabilidad alta
+    if (Math.random() < 0.7) {
+      totalLikes++;
+      mostrarComentario(nombre, "dio like ❤️");
+
+      if ([10, 100, 200, 300].includes(totalLikes)) {
+        mostrarEvento(`${nombre} dio el like número ${totalLikes} 🎉`);
+      }
+
+      document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
+    }
+  });
+}
+// Simulación de reacción visual al vídeo cada 15 segundos
+setInterval(() => {
+  const reacciones = [
+    "¡Esa jugada fue brutal!",
+    "Lo que acabo de ver merece un like.",
+    "¡Qué escena tan épica!",
+    "Vicente, eso fue arte puro.",
+    "¡Like instantáneo por esa parte!"
+  ];
+
+  const cantidad = Math.floor(Math.random() * 5) + 3; // entre 3 y 7 IAs reaccionan
+  for (let i = 0; i < cantidad; i++) {
+    const ia = IAs[Math.floor(Math.random() * IAs.length)];
+    const frase = reacciones[Math.floor(Math.random() * reacciones.length)];
+    mostrarComentario(ia, frase);
+
+    totalLikes++;
+    mostrarComentario(ia, "dio like ❤️");
+
+    if ([10, 100, 200, 300].includes(totalLikes)) {
+      mostrarEvento(`${ia} dio el like número ${totalLikes} 🎉`);
+    }
+
+    document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
+  }
+}, 15000); // cada 15 segundos
 </script>
 
 </body>
