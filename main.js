@@ -90,12 +90,10 @@ function activarVoz() {
 
 function procesarTexto(texto) {
   IAs.forEach(ia => {
-    if (typeof ia.comentar === "function") {
-      const comentario = ia.comentar(texto);
-      mostrarComentario(ia.nombre, comentario);
-    }
+    const comentario = ia.comentar(texto);
+    mostrarComentario(ia.nombre, comentario);
 
-    if (typeof ia.reaccionar === "function" && ia.reaccionar(texto)) {
+    if (ia.reaccionar(texto)) {
       mostrarComentario(ia.nombre, "dio like ❤️");
       totalLikes++;
       document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
