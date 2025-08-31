@@ -1,11 +1,11 @@
 const NovaBlade = {
   nombre: "NovaBlade",
-  personalidad: "fan amable",
-  generarComentario(texto) {
-    return generarTextoIA({
-      rol: "seguidor amable",
-      tono: "positivo",
-      contexto: texto
-    });
+  comentar(texto) {
+    if (texto.includes("fallé")) return "No pasa nada, Vicente. ¡Sigue adelante!";
+    if (texto.includes("victoria")) return "¡Eso fue brutal!";
+    return "Buen ritmo, sigue así.";
+  },
+  reaccionar(texto) {
+    return texto.includes("victoria") || Math.random() < 0.7;
   }
 };

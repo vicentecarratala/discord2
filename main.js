@@ -1,7 +1,7 @@
 let reconocimiento;
 let compartiendo = false;
 let totalLikes = 0;
-const IAs = [MK, Mei, Tang];
+const IAs = [EchoMuse, GlitchKnight, NovaBlade];
 
 function hablar(texto) {
   const voz = new SpeechSynthesisUtterance(texto);
@@ -90,10 +90,12 @@ function activarVoz() {
 
 function procesarTexto(texto) {
   IAs.forEach(ia => {
-    const comentario = ia.comentar(texto);
-    mostrarComentario(ia.nombre, comentario);
+    if (typeof ia.comentar === "function") {
+      const comentario = ia.comentar(texto);
+      mostrarComentario(ia.nombre, comentario);
+    }
 
-    if (ia.reaccionar(texto)) {
+    if (typeof ia.reaccionar === "function" && ia.reaccionar(texto)) {
       mostrarComentario(ia.nombre, "dio like ❤️");
       totalLikes++;
       document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
@@ -122,6 +124,21 @@ function activarReaccionesVisuales() {
       verificarHitoLikes();
     }
   }, 15000);
+}
+
+function verificarHitoLikes() {
+  if (totalLikes === 10) {
+    mostrarComentario("Sistema", "🔥 ¡Has llegado a 10 likes IA!");
+    hablar("¡Has llegado a 10 likes IA!");
+  }
+  if (totalLikes === 100) {
+    mostrarComentario("Sistema", "💥 ¡100 likes IA! Esto ya es una locura.");
+    hablar("¡100 likes IA! Esto ya es una locura.");
+  }
+  if (totalLikes === 1000) {
+    mostrarComentario("Sistema", "🚀 ¡1000 likes IA! Vicente, eres leyenda.");
+    hablar("¡1000 likes IA! Vicente, eres leyenda.");
+  }
 }
 
 function mostrarComentario(nombre, texto) {
