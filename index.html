@@ -2,377 +2,112 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🎮 Directo IA Final</title>
+  <title>🎮 Super directs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       background: #0d0d0d;
       color: #00ffcc;
       font-family: 'Orbitron', sans-serif;
-      overflow: hidden;
     }
     #pantalla {
       position: relative;
       width: 100vw;
       height: 100vh;
     }
-    video {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #video {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border: none;
-    }
-    #replay {
-      display: none;
-      z-index: 5;
-    }
-    #comentarios {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 60%;
-      max-height: 80%;
-      overflow-y: auto;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      border-left: 4px solid #00ffcc;
-      border-radius: 6px;
-      z-index: 10;
-    }
-    .comentario {
-      background: #222;
-      margin: 3px 0;
-      padding: 6px;
-      border-radius: 4px;
-      color: #fff;
-      font-size: 14px;
-    }
-    .nombreIA {
-      color: #ff00cc;
-      font-weight: bold;
+      height: 60vh;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 24px;
     }
     #controles {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 20;
-    }
-    #likesContador {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: #222;
-      padding: 10px;
-      border: 2px solid #00ffcc;
-      border-radius: 6px;
-      color: #00ffcc;
-      font-size: 16px;
-      z-index: 30;
-    }
-    #eventoEspecial {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ff00cc;
-      color: #fff;
+      display: flex;
+      gap: 10px;
       padding: 20px;
-      font-size: 24px;
-      border-radius: 10px;
-      display: none;
-      z-index: 50;
-      animation: fade 2s ease-in-out;
-    }
-    @keyframes fade {
-      0% { opacity: 0; transform: scale(0.8) translate(-50%, -50%); }
-      50% { opacity: 1; transform: scale(1.1) translate(-50%, -50%); }
-      100% { opacity: 0; transform: scale(1) translate(-50%, -50%); }
+      background: #111;
+      border-top: 2px solid #00ffcc;
     }
     button {
-      padding: 10px;
-      margin: 5px;
+      padding: 10px 20px;
       background-color: #222;
       border: 1px solid #00ffcc;
       color: #00ffcc;
       border-radius: 5px;
       font-size: 16px;
+      cursor: pointer;
     }
     button:hover {
       background-color: #00ffcc;
       color: #000;
-      cursor: pointer;
+    }
+    #comentarios {
+      padding: 20px;
+      max-height: 30vh;
+      overflow-y: auto;
+      background: #000;
+      border-top: 2px solid #00ffcc;
+    }
+    .comentario {
+      margin: 5px 0;
+      padding: 8px;
+      background: #222;
+      border-radius: 4px;
+    }
+    .nombreIA {
+      color: #ff00cc;
+      font-weight: bold;
+    }
+    #likesContador {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      background: #222;
+      padding: 8px;
+      border: 2px solid #00ffcc;
+      border-radius: 6px;
+      color: #00ffcc;
+      font-size: 14px;
+    }
+    #cuentaAtras {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      color: #ff00cc;
+      font-weight: bold;
+      z-index: 100;
+      text-shadow: 0 0 20px #ff00cc;
     }
   </style>
 </head>
 <body>
 
 <div id="pantalla">
-  <video id="stream" autoplay muted></video>
-  <video id="replay" controls></video>
-  <div id="comentarios"></div>
+  <div id="video">🎥 Esperando compartir pantalla...</div>
+
   <div id="controles">
+    <button onclick="empezarDirecto()">🟢 Empezar directo</button>
     <button onclick="compartirPantalla()">🖥️ Compartir pantalla</button>
-    <button onclick="activarEscucha()">🎙️ Escuchar IA</button>
-    <button onclick="darLike()">❤️ Like IA</button>
-    <button onclick="terminarDirecto()">🛑 Terminar</button>
+    <button onclick="terminarDirecto()">🛑 Terminar directo</button>
   </div>
+
+  <div id="comentarios"></div>
   <div id="likesContador">Likes IA: 0</div>
-  <div id="eventoEspecial"></div>
+  <div id="cuentaAtras"></div>
 </div>
 
-<script>
-  let recognition;
-  let mediaRecorder;
-  let recordedChunks = [];
-  let totalLikes = 0;
-
-  const prefijos = ["Nova", "Byte", "Echo", "Pixel", "Zero", "Glitch", "Neuro", "Hack", "Data", "Quantum", "Cyber", "Synth", "Shadow", "Flux", "Core"];
-  const sufijos = ["Blade", "Muse", "Queen", "Ghost", "Knight", "Witch", "Fang", "Rider", "Synth", "Jester", "Storm", "Spark", "Pulse", "Drift", "Loop"];
-  const IAs = [];
-
-  for (let i = 0; i < 120; i++) {
-    const nombre = prefijos[i % prefijos.length] + sufijos[i % sufijos.length] + i;
-    IAs.push(nombre);
-  }
-
-  async function compartirPantalla() {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: true });
-      document.getElementById('stream').srcObject = stream;
-
-      recordedChunks = [];
-      mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 2500000
-      });
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) recordedChunks.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const replay = document.getElementById('replay');
-        replay.src = url;
-        replay.style.display = 'block';
-        document.getElementById('stream').style.display = 'none';
-      };
-
-      mediaRecorder.start();
-    } catch (err) {
-      alert("No se pudo compartir la pantalla: " + err.message);
-    }
-  }
-
-  function activarEscucha() {
-    if (!('webkitSpeechRecognition' in window)) {
-      alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
-      return;
-    }
-
-    recognition = new webkitSpeechRecognition();
-    recognition.lang = "es-ES";
-    recognition.continuous = true;
-    recognition.interimResults = false;
-
-    recognition.onresult = function(event) {
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          const texto = event.results[i][0].transcript.trim();
-          responderIA(texto);
-        }
-      }
-    };
-
-    recognition.onerror = function(event) {
-      console.error("Error de reconocimiento:", event.error);
-    };
-
-    recognition.start();
-    alert("IA escuchando... Habla mientras compartes pantalla para que comenten.");
-  }
-
-  function terminarDirecto() {
-    if (recognition && recognition.stop) {
-      recognition.stop();
-      recognition = null;
-    }
-
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      mediaRecorder.stop();
-    }
-
-    const video = document.getElementById('stream');
-    const tracks = video.srcObject?.getTracks();
-    if (tracks) {
-      tracks.forEach(track => track.stop());
-    }
-
-    video.srcObject = null;
-    alert("🎬 Directo finalizado. Reproduciendo grabación.");
-  }
-
-  function responderIA(texto) {
-    const negativo = ["no puedo", "soy malo", "esto es un desastre", "me rindo", "no sirve", "fallé"];
-    const esNegativo = negativo.some(p => texto.toLowerCase().includes(p));
-
-    IAs.forEach(nombre => {
-      let respuesta;
-      if (esNegativo) {
-        const animos = [
-          "¡No te rindas! Estás más cerca de lo que crees.",
-          "Todos fallamos, pero tú aprendes más rápido que nadie.",
-          "¡Eres un crack! Solo necesitas un respiro.",
-          "Tu esfuerzo vale más que cualquier resultado.",
-          "¡Vamos Vicente! Tienes todo para lograrlo."
-        ];
-        respuesta = `${nombre}: ${animos[Math.floor(Math.random() * animos.length)]}`;
-      } else {
-        respuesta = razonar(texto, nombre);
-      }
-
-      mostrarComentario(nombre, respuesta);
-
-      // Likes automáticos con probabilidad
-      if (Math.random() < 0.3) {
-        totalLikes++;
-        mostrarComentario(nombre, "dio like ❤️");
-
-        if ([10, 100, 200, 300].includes(totalLikes)) {
-          mostrarEvento(`${nombre} dio el like número ${totalLikes} 🎉`);
-        }
-
-        document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
-      }
-    });
-  }
-
-  function razonar(texto, nombre) {
-    texto = texto.toLowerCase();
-    if (texto.includes("entrenamiento")) {
-      return `${nombre}: Tienes razón, se nota que estás puliendo técnica.`;
-    }
-    if (texto.includes("difícil") || texto.includes("complicado")) {
-      return `${nombre}: Ese momento fue un reto. Lo manejaste bien.`;
-    }
-    if (texto.includes("victoria") || texto.includes("gané")) {
-      return `${nombre}: ¡Felicidades! Esa victoria fue merecida.`;
-    }
-    if (texto.includes("fallo") || texto.includes("error")) {
-      return `${nombre}: Todos fallamos a veces. Lo importante es aprender.`;
-    }
-
-    const inicio = ["Interesante lo que dijiste sobre", "Buen punto sobre", "Me gustó cuando hablaste de"];
-    const cierre = ["¡Sigue así!", "Eso me hizo pensar.", "Muy bien expresado."];
-    const fragmento = texto.split(" ").slice(0, 6).join(" ") + "...";
-    return `${nombre}: ${inicio[Math.floor(Math.random() * inicio.length)]} "${fragmento}". ${cierre[Math.floor(Math.random() * cierre.length)]}`;
-  }
-
-  function mostrarComentario(nombre, texto) {
-    const div = document.createElement('div');
-    div.className = 'comentario';
-    div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
-    document.getElementById('comentarios').appendChild(div);
-  }
-
-  function darLike() {
-    const likesPorClick = Math.floor(Math.random() * 5) + 1;
-    for (let i = 0; i < likesPorClick; i++) {
-      const ia = IAs[Math.floor(Math.random() * IAs.length)];
-      totalLikes++;
-      mostrarComentario(ia, "dio like ❤️");
-
-      if ([10, 100, 200, 300].includes(totalLikes)) {
-        mostrarEvento(`${ia} dio el like número ${totalLikes} 🎉`);
-      }
-    }
-    document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
-  }
-
-  function mostrarEvento(texto) {
-    const evento = document.getElementById("eventoEspecial");
-    evento.textContent = texto;
-    evento.style.display = "block";
-    setTimeout(() => {
-      evento.style.display = "none";
-    }, 3000);
-  }
-function responderIA(texto) {
-  const positivo = ["logré", "victoria", "mejoré", "aprendí", "gané", "conseguí", "superé", "avancé", "bien hecho", "funcionó"];
-  const negativo = ["no puedo", "soy malo", "esto es un desastre", "me rindo", "no sirve", "fallé"];
-  const textoLower = texto.toLowerCase();
-
-  IAs.forEach(nombre => {
-    let respuesta = "";
-    const elogios = [
-      "¡Eso fue épico!",
-      "Se nota tu progreso, Vicente.",
-      "¡Qué gran momento!",
-      "Tu energía es contagiosa.",
-      "¡Like automático por esa frase!"
-    ];
-    const animos = [
-      "¡No te rindas! Estás más cerca de lo que crees.",
-      "Todos fallamos, pero tú aprendes más rápido que nadie.",
-      "¡Eres un crack! Solo necesitas un respiro.",
-      "Tu esfuerzo vale más que cualquier resultado.",
-      "¡Vamos Vicente! Tienes todo para lograrlo."
-    ];
-
-    if (negativo.some(p => textoLower.includes(p))) {
-      respuesta = `${nombre}: ${animos[Math.floor(Math.random() * animos.length)]}`;
-    } else if (positivo.some(p => textoLower.includes(p))) {
-      respuesta = `${nombre}: ${elogios[Math.floor(Math.random() * elogios.length)]}`;
-    } else {
-      respuesta = razonar(texto, nombre);
-    }
-
-    mostrarComentario(nombre, respuesta);
-
-    // Todos los fans dan like con probabilidad alta
-    if (Math.random() < 0.7) {
-      totalLikes++;
-      mostrarComentario(nombre, "dio like ❤️");
-
-      if ([10, 100, 200, 300].includes(totalLikes)) {
-        mostrarEvento(`${nombre} dio el like número ${totalLikes} 🎉`);
-      }
-
-      document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
-    }
-  });
-}
-// Simulación de reacción visual al vídeo cada 15 segundos
-setInterval(() => {
-  const reacciones = [
-    "¡Esa jugada fue brutal!",
-    "Lo que acabo de ver merece un like.",
-    "¡Qué escena tan épica!",
-    "Vicente, eso fue arte puro.",
-    "¡Like instantáneo por esa parte!"
-  ];
-
-  const cantidad = Math.floor(Math.random() * 5) + 3; // entre 3 y 7 IAs reaccionan
-  for (let i = 0; i < cantidad; i++) {
-    const ia = IAs[Math.floor(Math.random() * IAs.length)];
-    const frase = reacciones[Math.floor(Math.random() * reacciones.length)];
-    mostrarComentario(ia, frase);
-
-    totalLikes++;
-    mostrarComentario(ia, "dio like ❤️");
-
-    if ([10, 100, 200, 300].includes(totalLikes)) {
-      mostrarEvento(`${ia} dio el like número ${totalLikes} 🎉`);
-    }
-
-    document.getElementById("likesContador").textContent = `Likes IA: ${totalLikes}`;
-  }
-}, 15000); // cada 15 segundos
-</script>
+<script src="MK.js"></script>
+<script src="Mei.js"></script>
+<script src="Tang.js"></script>
+<script src="main.js"></script>
 
 </body>
 </html>
