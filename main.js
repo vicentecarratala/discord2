@@ -1,5 +1,5 @@
 let reconocimiento;
-let compartiendo = false;
+let compartiendo = true;
 let totalLikes = 0;
 const IAs = [EchoMuse, GlitchKnight, NovaBlade];
 
@@ -144,4 +144,22 @@ function mostrarComentario(nombre, texto) {
   div.className = "comentario";
   div.innerHTML = `<span class="nombreIA">${nombre}:</span> ${texto}`;
   document.getElementById("comentarios").appendChild(div);
+}
+function activarVoz() {
+  reconocimiento = new webkitSpeechRecognition();
+  reconocimiento.lang = "es-ES";
+  reconocimiento.continuous = true;
+  reconocimiento.interimResults = false;
+
+  reconocimiento.onresult = function(event) {
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        const texto = event.results[i][0].transcript.trim();
+        procesarTexto(texto);
+      }
+    }
+  };
+
+  reconocimiento.start();
+  mostrarComentario("Sistema", "🎙️ Voz activada. Las IAs están escuchando...");
 }
